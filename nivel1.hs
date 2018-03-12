@@ -22,19 +22,40 @@ setFruit = cat [
                       ]
                ]
 
-sizeQuest = [["Es ", set "sizes"]]
+sizeQuest   = [["Es ", set "sizes"]]
+flavorQuest = [["Es ", set "flavors"]]
+vitAQuest   = [["Tiene vitamina a"]]
 
-sizeCat = for sizeQuest $ (\x ->
+colorQuest = [["Es ", set "colors"]]
+
+-- sizeCat = for sizeQuest $ (\x ->
+--           cat [
+--                 pat x,
+--                 temp [
+--                        setlocal "size" [ srai ["SELECTITEM 5 IN ",
+--                                                getglobal "fr_props"] ],
+--                        condv "size" [
+--                            li2 [] [ val [star], " Sí" ],
+--                            li2 [] [ "No" ]
+--                                     ]
+--                      ]
+--               ])
+
+propCat propQuest index = for propQuest $ (\x ->
           cat [
                 pat x,
                 temp [
-                       setlocal "size" [ srai ["SELECTITEM 5 IN ",
+                       setlocal "size" [ srai ["SELECTITEM ", Text $ show index, " IN ",
                                                getglobal "fr_props"] ],
-                       condn "size" [
-                         
+                       condv "size" [
+                           li2 [] [ val [star], " Sí" ],
+                           li2 [] [ "No" ]
                                     ]
                      ]
               ])
+
+sizeCat = propCat sizeQuest 5
+flavorCat = propCat flavorQuest 6
 
 startGame = ["start","Empe+ ^ juego ^ fruta",
              "Jug+ ^ fruta+"]
@@ -47,7 +68,7 @@ doc1 = for startGame $ (\x ->
                 temp [ srai [ "SELFRUIT" ] ]
               ])
 
-doc = doc1 ++ sizeCat ++ [setFruit]
+doc = doc1 ++ sizeCat ++ flavorCat ++ [setFruit]
 
 
 main :: IO ()
