@@ -7,57 +7,49 @@ setFruit = cat [
                  pat  [ "SELFRUIT" ],
                  temp [
                         think [
-                        setlocal "props" [ readset "props" ],
-                        setlocal  "list_fruit" [ readset "fruits" ],
+                        setlocal  "props" [ readset "props" ],
                         setlocal  "pos" [ srai ["RANDOM 16"] ],
-                        setglobal "fruit" [
-                                  srai ["SELECTITEM ", getlocal "pos",
-                                        " IN ", getlocal "list_fruit"]
-                                          ],
                         setglobal "fr_props" [
                                   srai [ "QUITARESPACIOS ", srai ["SELECTITEM ", getlocal "pos",
-                                        " IN ", getlocal "props"] ] ]
-                      ],
+                                        " IN ", getlocal "props"] ] ],
+                        setglobal "fruit" [
+                                  srai ["TOP ", getglobal "fr_props"]
+                                          ] ]
+                        
+                      {-]-},
                       "De acuerdo, ya he pensado una fruta"
                       ]
                ]
 
 sizeQuest   = [["Es ", set "sizes"]]
 flavorQuest = [["Es ", set "flavors"]]
-vitAQuest   = [["Tiene vitamina a"]]
-
+vitQuest   = [["Tiene vitamina ", set "vit"]]
 colorQuest = [["Es ", set "colors"]]
+fruitQuest = [["Es ", set "fruits"]]
 
--- sizeCat = for sizeQuest $ (\x ->
---           cat [
---                 pat x,
---                 temp [
---                        setlocal "size" [ srai ["SELECTITEM 5 IN ",
---                                                getglobal "fr_props"] ],
---                        condv "size" [
---                            li2 [] [ val [star], " Sí" ],
---                            li2 [] [ "No" ]
---                                     ]
---                      ]
---               ])
 
-propCat propQuest index = for propQuest $ (\x ->
+propCat propQuest idxs = for propQuest $ (\x ->
           cat [
                 pat x,
                 temp [
-                       setlocal "size" [ srai ["SELECTITEM ", Text $ show index, " IN ",
-                                               getglobal "fr_props"] ],
-                       condv "size" [
-                           li2 [] [ val [star], " Sí" ],
+                       think [ setlocal "prop" [star] ],
+                       condv "prop" ([
+                           li2 [] [ val [ srai ["SELECTITEM ", Text $ show idx, " IN ",
+                                               getglobal "fr_props"] ] , " Sí" ] | idx <- idxs
+                                     ] ++
+                                     [
                            li2 [] [ "No" ]
-                                    ]
+                                     ])
                      ]
               ])
 
-sizeCat = propCat sizeQuest 5
-flavorCat = propCat flavorQuest 6
+sizeCat = propCat sizeQuest [5]
+flavorCat = propCat flavorQuest [6]
+vitCat = propCat vitQuest [7,8,9]
+colorCat = propCat colorQuest [2,3,4]
+fruitCat = propCat fruitQuest [1]
 
-startGame = ["start","Empe+ ^ juego ^ fruta",
+startGame = ["start","Emp+ ^ juego ^ yo ^ fruta",
              "Jug+ ^ fruta+"]
 
 for = flip map
@@ -68,7 +60,8 @@ doc1 = for startGame $ (\x ->
                 temp [ srai [ "SELFRUIT" ] ]
               ])
 
-doc = doc1 ++ sizeCat ++ flavorCat ++ [setFruit]
+doc = doc1 ++ sizeCat ++ flavorCat ++
+      vitCat ++ colorCat ++ fruitCat ++ [setFruit]
 
 
 main :: IO ()
